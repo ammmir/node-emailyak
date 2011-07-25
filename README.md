@@ -37,7 +37,7 @@ But if you don't like that pattern, then the following is equivalent:
     var email = api.email({
       from: 'amir@example.com',
       to: 'robert@example.com',
-      subject: 'emailyak + node.js = ?',
+      subject: 'emailyak + node.js = ?'
     });
     email.text = 'the node.js emailyak api is sick.';
     email.send(function(err, res) {

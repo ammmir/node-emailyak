@@ -18,7 +18,7 @@ or receive mail as:
     var api = new EmailYakAPI('my api key');
 
 The EmailYakAPI object provides a convenient builder object that can be
-chained to create an email message.
+chained to create an email message:
 
     var email = api.emailBuilder()
         .from('amir@example.com')

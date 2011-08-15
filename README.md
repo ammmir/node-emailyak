@@ -32,7 +32,7 @@ Available API methods:
     getNewEmail(domain, get_headers, start, end, cb);
     deleteEmail(email_id, cb);
 
-The function `cb` will be called with three arguments:
+The function `cb` will be called with two arguments:
 
 * `err`: error thrown while performing request or parsing response
 * `data`: parsed JSON data

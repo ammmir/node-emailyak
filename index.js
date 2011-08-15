@@ -78,7 +78,7 @@ function parseResponse(cb) {
 
     try {
       data = JSON.parse(data);
-      return cb(null, res, data);
+      return cb(null, data);
     } catch(e) {
       return cb(e);
     }

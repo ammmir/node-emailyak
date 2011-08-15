@@ -32,6 +32,11 @@ Available API methods:
     getNewEmail(domain, get_headers, start, end, cb);
     deleteEmail(email_id, cb);
 
-`cb` is a callback that should accept an Error object as its first
-argument defined for network and I/O errors, and a second (parsed JSON)
-data argument.
+The function `cb` will be called with three arguments:
+
+* `err`: error thrown while performing request or parsing response
+* `data`: parsed JSON data
+
+If the data returned from the API is not valid JSON, `data` will be
+empty and `err` will be populated with the exception thrown while
+attempting to parse the JSON.

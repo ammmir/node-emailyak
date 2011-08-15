@@ -32,5 +32,6 @@ Available API methods:
     getNewEmail(domain, get_headers, start, end, cb);
     deleteEmail(email_id, cb);
 
-Note that the first error argument to the callback will only be defined
-for node-level errors, not non-successful HTTP statuses.
+`cb` is a callback that should accept an Error object as its first
+argument defined for network and I/O errors, and a second (parsed JSON)
+data argument.

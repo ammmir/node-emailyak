@@ -1,7 +1,7 @@
-# node-emaiyak
+# node-emailyak
 
 A node.js module for sending and receiving email using
-<a href="http://www.emailyak.com/">EmailYak</a>.
+<a href="http://www.emailyak.com/">EmailYak</a>. MIT licensed.
 
 ## Installation
 
@@ -17,32 +17,20 @@ or receive mail as:
 
     var api = new EmailYakAPI('my api key');
 
-The EmailYakAPI object provides a convenient builder object that can be
-chained to create an email message:
+Using the EmailYakAPI object is very easy. Take a look at the [EmailYak
+documentation](http://docs.emailyak.com/) to see what API calls are
+available, and the syntax of any JSON returned.
 
-    var email = api.emailBuilder()
-        .from('amir@example.com')
-        .to('robert@example.com')
-        .subject('emailyak + node.js = ?')
-        .text('the node.js emailyak api is sick.')
-        .send(function(err, res) {
-          if(err)
-            console.error('failed to send email', err);
-          else
-            console.log('message sent!');
-        });
+Available API methods:
 
-But if you don't like that pattern, then the following is equivalent:
+    registerDomain(domain, callback_url, push_email, cb);
+    registerAddress(address, callback_url, push_email, cb);
+    sendEmail(params, cb);
+    getEmail(email_id, get_headers, cb);
+    getEmailList(email_ids, get_headers, cb);
+    getAllEmail(domain, get_headers, start, end, cb);
+    getNewEmail(domain, get_headers, start, end, cb);
+    deleteEmail(email_id, cb);
 
-    var email = api.email({
-      from: 'amir@example.com',
-      to: 'robert@example.com',
-      subject: 'emailyak + node.js = ?'
-    });
-    email.text = 'the node.js emailyak api is sick.';
-    email.send(function(err, res) {
-      // ...
-    });
-
-Fields can be specified as part of the Object passed to the constructor
-or directly set on the returned object.
+Note that the first error argument to the callback will only be defined
+for node-level errors, not non-successful HTTP statuses.

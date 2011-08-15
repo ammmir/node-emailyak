@@ -1,13 +1,12 @@
 /**
  * index.js
- * EmailYak node module
+ * EmailYak API client
  *
  * @author Amir Malik
  */
 
-var https = require('https');
-
-var EmailBuilder = require('./lib/email').EmailBuilder;
+var querystring = require('querystring'),
+          https = require('https');
 
 function EmailYakAPI(api_key) {
   this.api_key = api_key;
@@ -72,52 +71,86 @@ EmailYakAPI.prototype._post = function(path, data, cb) {
   req.end();
 };
 
-EmailYakAPI.prototype.register = function(address, cb) {
-  this._post('register/address/', {Address: address}, function(err, res, data) {
-    if(err) return cb(err);
+function parseResponse(cb) {
+  return function(err, res, data) {
+    if(err)
+      return cb(err);
 
-    // TODO: check status in data
-    cb(null);
-  });
+    try {
+      data = JSON.parse(data);
+      return cb(null, res, data);
+    } catch(e) {
+      return cb(e);
+    }
+  };
+}
+
+EmailYakAPI.prototype.registerDomain = function(domain, callback_url, push_email, cb) {
+  var opts = {
+    Domain: domain,
+    CallbackURL: callback_url,
+    PushEmail: push_email,
+  };
+
+  this._post('register/domain/', opts, parseResponse(cb));
 };
 
-EmailYakAPI.prototype.send = function(email, cb) {
-  this._post('send/email/',
-             {
-               FromAddress: email.from,
-               ToAddress: email.to,
-               Subject: email.subject,
-               TextBody: email.text
-             },
-             function(err, res, data) {
-               if(err) return cb(err);
+EmailYakAPI.prototype.registerAddress = function(address, callback_url, push_email, cb) {
+  var opts = {
+    Address: address,
+    CallbackURL: callback_url,
+    PushEmail: push_email,
+  };
 
-               cb(null);
-             });
+  this._post('register/address/', opts, parseResponse(cb));
 };
 
-EmailYakAPI.prototype.get = function(email_id, cb) {
-  this._get('get/email/?EmailID=' + id, function(err, res, data) {
-    if(err) return cb(err);
-
-    // TODO: should we have an object mapping back to simple stuff?
-    cb(null, JSON.parse(data));
-  });
+EmailYakAPI.prototype.sendEmail = function(params, cb) {
+  this._post('send/email/', params, parseResponse(cb));
 };
 
-EmailYakAPI.prototype.email = function(params) {
-  var e = new Email(this);
+EmailYakAPI.prototype.getEmail = function(email_id, get_headers, cb) {
+  var params = {
+    EmailID: email_id,
+    GetHeaders: get_headers,
+  };
 
-  for(var key in params) {
-    if(params.hasOwnProperty(key))
-      e[key] = params[key];
+  if(!cb) {
+    cb = get_headers;
+    params['GetHeaders'] = false;
   }
 
-  return e;
+  this._get('get/email/?' + querystring.stringify(params), parseResponse(cb));
 };
 
-EmailYakAPI.prototype.emailBuilder = function() {
-  return new EmailBuilder(this);
+EmailYakAPI.prototype.getEmailList = function(email_ids, get_headers, cb) {
+  this.getEmail(email_ids.join(','), get_headers, cb);
+};
+
+EmailYakAPI.prototype.getAllEmail = function(domain, get_headers, start, end, cb) {
+  var params = {
+    Domain: domain,
+    GetHeaders: get_headers,
+    Start: start,
+    End: end,
+  };
+
+  this._get('get/all/email/?' + querystring.stringify(params), parseResponse(cb));
+};
+
+EmailYakAPI.prototype.getNewEmail = function(domain, get_headers, start, end, cb) {
+  var params = {
+    Domain: domain,
+    GetHeaders: get_headers,
+    Start: start,
+    End: end,
+  };
+
+  this._get('get/new/email/?' + querystring.stringify(params), parseResponse(cb));
+};
+
+EmailYakAPI.prototype.deleteEmail = function(email_id, cb) {
+  this._post('delete/email/', {EmailID: email_id}, parseResponse(cb));
 };
 
 exports.EmailYakAPI = EmailYakAPI;

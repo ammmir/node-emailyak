@@ -1,0 +1,6 @@
+{
+  "name": "emailyak",
+  "version": "0.0.0",
+  "description": "A node.js module for receiving email using the EmailYak API.",
+  "main": "index"
+}
